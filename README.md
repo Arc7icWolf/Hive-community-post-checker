@@ -1,4 +1,4 @@
-# Hive Community Post Filter Script
+# Hive Community Post Checker Script
 
 ## Description
 
