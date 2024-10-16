@@ -1,0 +1,54 @@
+Installation
+1) Clone the repository:
+
+'''
+git clone https://github.com/your-username/hive-post-filter.git
+cd hive-post-filter
+'''
+
+2) Install dependencies:
+
+'''
+pip install -r requirements.txt
+'''
+
+3) Configure log file (optional):
+
+The script generates a main.log file where important events are logged. Ensure you have the correct permissions to write the log file in your working directory.
+
+Usage
+1) Run the main script:
+
+'''
+python community_post_checker.py
+'''
+
+The script will start fetching posts from the specified community, filter them based on the described criteria, and save eligible posts in a CSV file named hive_posts.csv.
+
+2) You can modify the script to change the target community and/or change/add additional filters.
+
+Testing
+The script includes unit tests to verify the correctness of the main functions. To run the tests, use the following command:
+
+'''
+python -m unittest discover
+'''
+
+Project Structure
+
+'''
+hive-post-filter/
+│
+├── community_post_checker.py         # Main script
+├── requirements.txt                  # List of dependencies
+├── test_community_post_checker.py    # Unit tests file
+├── README.md                         # Project documentation
+├── community_post_checker.log        # Log file (auto-generated)
+└── entries.csv                       # CSV file with eligible posts (auto-generated)
+'''
+
+Contributions
+If you wish to contribute to the project, feel free to open a pull request or report issues via the Issues section.
+
+License
+This project is licensed under the MIT License. See the LICENSE file for details.
