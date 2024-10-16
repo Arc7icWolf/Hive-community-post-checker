@@ -11,7 +11,7 @@ import logging
 
 
 # logger
-def logger():
+def get_logger():
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.INFO)
     handler = logging.FileHandler("community_post_checker.log", mode="a")
@@ -21,10 +21,10 @@ def logger():
     return logger
 
 
-logger = logger()
+logger = get_logger()
 
 
-### Interaction with Hive API
+# INTERACTION WITH HIVE API
 
 
 # Send request, get response, return decoded JSON response
@@ -44,7 +44,7 @@ def get_response(data, session: requests.Session):
         return response
 
 
-### Check requirements of the posts // API interaction --> no
+# CHECK REQUIREMENTS OF THE POSTS // API INTERACTION --> NO
 
 
 # Check it target language is among the top languages and number of languages
@@ -53,7 +53,7 @@ def text_language(text):
         languages = detect_langs(text)
         num_languages = len(languages)
 
-        # Double check the presence of the target language to avoid false negatives
+        # Double-check the presence of the target language to avoid false negatives
         if not any(lang.lang == "it" for lang in languages):
             text_length = len(text)
             half_length = text_length // 2
@@ -85,10 +85,10 @@ def text_language(text):
 # Clean text before converting and counting words
 def clean_markdown(md_text):
     # Remove images
-    md_text = re.sub(r"!\[.*?\]\(.*?\)", "", md_text)
+    md_text = re.sub(r"!\[.*?]\(.*?\)", "", md_text)
 
     # Remove hyperlinks
-    md_text = re.sub(r"\[(.*?)\]\(.*?\)", r"\1", md_text)
+    md_text = re.sub(r"\[(.*?)]\(.*?\)", r"\1", md_text)
 
     return md_text
 
@@ -105,7 +105,7 @@ def convert_and_count_words(md_text):
     return len(words)
 
 
-### Check requirements of the posts // API interaction --> yes
+# CHECK REQUIREMENTS OF THE POSTS // API INTERACTION --> YES
 
 
 # Check if target account commented a post in the past 7 days in the target community
