@@ -123,7 +123,7 @@ def has_replied(author, seven_days, session: requests.Session):
         if reply_time_formatted < seven_days:
             break
 
-        if "hive-146620" not in reply["json_metadata"].get("tags", []):
+        if "hive-146620" not in reply.get("community", []):
             continue  # If the comment is not in the target community, skip
 
         replies_num += 1
