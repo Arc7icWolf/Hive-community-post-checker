@@ -1,7 +1,6 @@
 import time
 import requests
 import json
-import os
 from datetime import datetime, timedelta
 import re
 import markdown
@@ -176,18 +175,6 @@ def get_last_polls(session: requests.Session):
     return polls
 
 
-def save_author(author, replies, polls):
-    if os.path.exists("authors_list.txt"):
-        with open("authors_list.txt", "r", newline="", encoding="utf-8") as file:
-            authors = file.read()
-            if author not in authors:
-                with open("authors_list.txt", "a", newline="", encoding="utf-8") as file:
-                    file.write(f"{author} did {replies} comments and voted in {polls} polls\n")
-    else:
-        with open("authors_list.txt", "a", newline="", encoding="utf-8") as file:
-            file.write(f"{author} did {replies} comments and voted in {polls} polls\n")
-
-
 # Found and check eligible posts published in the last 7 days in the target community
 def eligible_posts(session: requests.Session):
     today = datetime.now()
@@ -196,6 +183,7 @@ def eligible_posts(session: requests.Session):
     less_than_seven_days = True
 
     entries = []
+    authors_stats = []
 
     last_poll = get_last_polls(session)
 
@@ -253,7 +241,9 @@ def eligible_posts(session: requests.Session):
             if polls_voted == 0:
                 continue
 
-            save_author(author, replies_num, polls_voted)
+            author_stats = f"{author} posted {replies_num} comments and voted in {polls_voted} polls"
+            if author_stats not in authors_stats:
+                authors_stats.append(author_stats)
 
             beneficiary = "no"
             beneficiary_weight_formatted = ""
@@ -275,9 +265,13 @@ def eligible_posts(session: requests.Session):
 
             i += 1
 
-    with open("entries.txt", "w", encoding="utf-8") as file:
+    with open("entries.txt", "w", newline="", encoding="utf-8") as file:
         for entry in entries:
             file.write(f"{entry}\n")
+
+    with open("authors_list.txt", "w", newline="", encoding="utf-8") as file:
+        for author_stats in authors_stats:
+            file.write(f"{author_stats}\n")
 
 
 def main():
