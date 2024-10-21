@@ -1,12 +1,12 @@
 import time
 import requests
 import json
-import csv
+import os
 from datetime import datetime, timedelta
 import re
 import markdown
 from bs4 import BeautifulSoup
-from langdetect import detect_langs, LangDetectException as lang_e
+from langdetect import detect_langs, LangDetectException as Lang_e
 import logging
 
 
@@ -68,8 +68,8 @@ def text_language(text):
                 if any(lang.lang == "it" for lang in languages):
                     num_languages = 2  # Same as above
                     break
-    except lang_e:
-        logger.error(f"Language error: {lang_e}")
+    except Lang_e:
+        logger.error(f"Language error: {Lang_e}")
         return False, 0
 
     # In case there are more than 2 languages, sort and take only the 2 most prob
@@ -116,19 +116,20 @@ def has_replied(author, seven_days, session: requests.Session):
         f'"params":{{"sort":"comments", "account": "{author}", "limit": 100}}, "id":1}}'
     )
     replies = get_response(data, session)
+    replies_num = 0
     for reply in replies:
         reply_time = reply["created"]
         reply_time_formatted = datetime.strptime(reply_time, "%Y-%m-%dT%H:%M:%S")
 
         if reply_time_formatted < seven_days:
-            continue
+            break
 
         if "hive-146620" not in reply["json_metadata"].get("tags", []):
             continue  # If the comment is not in the target community, skip
 
-        return True
+        replies_num += 1
 
-    return False
+    return replies_num
 
 
 # Check if target account voted in one of the 3 last polls
@@ -136,6 +137,7 @@ def has_voted_poll(last_poll, author, session: requests.Session):
     today = datetime.now()
     three_weeks_ago = today - timedelta(days=21, hours=23)
     num = -1
+    polls_voted = 0
     while True:
         # Get all custom operations from target account, poll votes included
         data = (
@@ -146,11 +148,11 @@ def has_voted_poll(last_poll, author, session: requests.Session):
         for op in custom_json:
             link = op[1]["op"][1]["id"]
             if link in last_poll:
-                return True
+                polls_voted += 1
         timestamp = custom_json[0][1]["timestamp"]
         timestamp_formatted = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S")
         if timestamp_formatted < three_weeks_ago:
-            return False
+            return polls_voted
         num = custom_json[0][0]
 
 
@@ -172,6 +174,18 @@ def get_last_polls(session: requests.Session):
             polls.append(f"leo_poll_{poll_link}")
     logger.info(polls)
     return polls
+
+
+def save_author(author, replies, polls):
+    if os.path.exists("authors_list.txt"):
+        with open("authors_list.txt", "r", newline="", encoding="utf-8") as file:
+            authors = file.read()
+            if author not in authors:
+                with open("authors_list.txt", "a", newline="", encoding="utf-8") as file:
+                    file.write(f"{author} did {replies} comments and voted in {polls} polls\n")
+    else:
+        with open("authors_list.txt", "a", newline="", encoding="utf-8") as file:
+            file.write(f"{author} did {replies} comments and voted in {polls} polls\n")
 
 
 # Found and check eligible posts published in the last 7 days in the target community
@@ -205,6 +219,7 @@ def eligible_posts(session: requests.Session):
             permlink = post["permlink"]
             title = post["title"]
             is_pinned = post.get("stats", {}).get("is_pinned", [])
+            beneficiaries = post["beneficiaries"]
 
             if author == "libertycrypto27":
                 continue  # Skip the author of the contest :(
@@ -230,13 +245,29 @@ def eligible_posts(session: requests.Session):
             ):
                 continue
 
-            if has_replied(author, seven_days, session) is False:
+            replies_num = has_replied(author, seven_days, session)
+            if replies_num == 0:
                 continue
 
-            if has_voted_poll(last_poll, author, session) is False:
+            polls_voted = has_voted_poll(last_poll, author, session)
+            if polls_voted == 0:
                 continue
 
-            message = f"{i}) {author} published ['{title}'](https://www.peakd.com/@{author}/{permlink})"
+            save_author(author, replies_num, polls_voted)
+
+            beneficiary = "no"
+            beneficiary_weight_formatted = ""
+            for beneficiary in beneficiaries:
+                if beneficiary.get("account", []) == "balaenoptera":
+                    beneficiary_weight = beneficiary.get("weight", [])
+                    beneficiary_weight_formatted = f" for {int(beneficiary_weight / 100)}%"
+                    beneficiary = "yes"
+                    break
+
+            message = (
+                f"{i}) {author} published ['{title}'](https://www.peakd.com/@{author}/{permlink})"
+                f" ---> balaenoptera as beneficiary? {beneficiary} {beneficiary_weight_formatted}"
+            )
 
             entries.append(message)
 
@@ -244,10 +275,9 @@ def eligible_posts(session: requests.Session):
 
             i += 1
 
-    with open("entries.csv", "w", newline="", encoding="utf-8") as csvfile:
-        csv_writer = csv.writer(csvfile)
+    with open("entries.txt", "w", encoding="utf-8") as file:
         for entry in entries:
-            csv_writer.writerow([entry])
+            file.write(f"{entry}\n")
 
 
 def main():
