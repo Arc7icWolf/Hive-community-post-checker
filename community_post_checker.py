@@ -250,7 +250,7 @@ def eligible_posts(session: requests.Session):
             for beneficiary in beneficiaries:
                 if beneficiary.get("account", []) == "balaenoptera":
                     beneficiary_weight = beneficiary.get("weight", [])
-                    beneficiary_weight_formatted = f" for {int(beneficiary_weight / 100)}%"
+                    beneficiary_weight_formatted = f"for {int(beneficiary_weight / 100)}%"
                     beneficiary = "yes"
                     break
 
