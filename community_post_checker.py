@@ -117,6 +117,7 @@ def has_replied(author, seven_days, session: requests.Session):
     )
     replies = get_response(data, session)
     replies_num = 0
+    valid_reply = False
     for reply in replies:
         reply_time = reply["created"]
         reply_time_formatted = datetime.strptime(reply_time, "%Y-%m-%dT%H:%M:%S")
@@ -127,9 +128,12 @@ def has_replied(author, seven_days, session: requests.Session):
         if "hive-146620" not in reply.get("community", []):
             continue  # If the comment is not in the target community, skip
 
+        if reply["children"] == 1 and reply["parent_author"] != author:
+            valid_reply = True  # Look for comments to other authors
+
         replies_num += 1
 
-    return replies_num
+    return valid_reply, replies_num
 
 
 # Check if target account voted in one of the 3 last polls
@@ -230,12 +234,12 @@ def eligible_posts(session: requests.Session):
             word_count = convert_and_count_words(body)
 
             if (lang_num == 1 and word_count < 500) or (
-                lang_num > 1 and word_count < 1000
+                    lang_num > 1 and word_count < 1000
             ):
                 continue
 
-            replies_num = has_replied(author, seven_days, session)
-            if replies_num == 0:
+            valid_reply, replies_num = has_replied(author, seven_days, session)
+            if valid_reply is False:
                 continue
 
             polls_voted = has_voted_poll(last_poll, author, session)
@@ -287,7 +291,7 @@ def main():
         logger.error(f"An error occurred: {e}")
 
     update_winners_list(session)
-    
+
     elapsed_time = time.time() - start
     print(f"Work completed in {elapsed_time:.2f} seconds")
 
