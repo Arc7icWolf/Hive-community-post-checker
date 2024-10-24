@@ -51,6 +51,7 @@ def get_contest_winners(session: requests.Session):
             if line:
                 winner_dict = ast.literal_eval(line)
                 winners.append(winner_dict)
+    logger.info(f"Previous winners:\n{winners}")
     new_posts_num = 0
     for post in posts:
         if posts[0]["created"] == winners[0]["timestamp"]:
