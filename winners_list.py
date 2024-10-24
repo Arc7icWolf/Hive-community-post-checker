@@ -54,7 +54,7 @@ def get_contest_winners(session: requests.Session):
     logger.info(f"Previous winners:\n{winners}")
     new_posts_num = 0
     for post in posts:
-        if posts[0]["created"] == winners[0]["timestamp"]:
+        if post[0]["created"] == winners[0]["timestamp"]:
             break
         new_posts_num += 1
     if new_posts_num == 0:
