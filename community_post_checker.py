@@ -7,6 +7,7 @@ import markdown
 from bs4 import BeautifulSoup
 from langdetect import detect_langs, LangDetectException as Lang_e
 import logging
+from winners_list import update_winners_list
 
 
 # logger
@@ -218,7 +219,7 @@ def eligible_posts(session: requests.Session):
             created_formatted = datetime.strptime(created, "%Y-%m-%dT%H:%M:%S")
             if created_formatted < seven_days:
                 less_than_seven_days = False
-                print("Work completed", end=" ")
+                print("No more posts less than seven days older found")
                 break  # Stop if post is more than 7 days old
 
             valid_language, lang_num = text_language(body)
@@ -285,8 +286,10 @@ def main():
     except Exception as e:
         logger.error(f"An error occurred: {e}")
 
+    update_winners_list(session)
+    
     elapsed_time = time.time() - start
-    print(f"in {elapsed_time:.2f} seconds")
+    print(f"Work completed in {elapsed_time:.2f} seconds")
 
 
 if __name__ == "__main__":
