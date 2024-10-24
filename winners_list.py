@@ -1,4 +1,3 @@
-import time
 import requests
 import json
 import logging
@@ -88,8 +87,6 @@ def update_winners_list(session: requests.Session):
 
 
 def main():
-    start = time.time()
-
     try:
         with requests.Session() as session:
             update_winners_list(session)
@@ -97,9 +94,6 @@ def main():
         logger.error(f"JSON decode error or missing key: {e}")
     except Exception as e:
         logger.error(f"An error occurred: {e}")
-
-    elapsed_time = time.time() - start
-    print(f"in {elapsed_time:.2f} seconds")
 
 
 if __name__ == "__main__":
