@@ -1,0 +1,6 @@
+{'author': 'arc7icwolf', 'wins': 2}
+{'author': 'stefano.massari', 'wins': 2}
+{'author': 'bencwarmer', 'wins': 2}
+{'author': 'vittoriozuccala', 'wins': 2}
+{'author': 'lozio71', 'wins': 1}
+{'author': 'p1k4ppa10', 'wins': 1}
