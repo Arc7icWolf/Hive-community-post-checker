@@ -7,7 +7,7 @@ import ast
 # logger
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-handler = logging.FileHandler("main.log", mode="a")
+handler = logging.FileHandler("winners_list.log", mode="a")
 formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
 handler.setFormatter(formatter)
 logger.addHandler(handler)
