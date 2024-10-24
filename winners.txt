@@ -1,0 +1,13 @@
+{"timestamp": "2024-10-18T21:03:39"}
+{"author": "arc7icwolf", "wins": 6}
+{"author": "stefano.massari", "wins": 2}
+{"author": "bencwarmer", "wins": 4}
+{"author": "vittoriozuccala", "wins": 2}
+{"author": "lozio71", "wins": 1}
+{"author": "p1k4ppa10", "wins": 3}
+{"author": "mad-runner", "wins": 1}
+{"author": "pousinha", "wins": 2}
+{"author": "stewie.wieno", "wins": 4}
+{"author": "giuatt07", "wins": 1}
+{"author": "tosolini", "wins": 2}
+{"author": "li-lou", "wins": 1}
