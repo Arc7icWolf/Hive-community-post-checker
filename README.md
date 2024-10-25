@@ -9,9 +9,11 @@ This Python script interacts with the Hive blockchain to retrieve posts publishe
 - The post author must have replied to a post in the target community in the past 7 days.
 - The post author must have voted in one of the last 3 polls published by a specific account.
 
-The script also generate a list with all the eligible authors, the number of comments published (in the last 7 days) and of polls voted (up to 3).
+The script also generate a list with all the eligible authors, together with the number of comments published (in the last 7 days) and of polls voted (up to 3) by them.
 
 Moreover, the script also keep track of all the previous winners of the contests in a TXT file.
+
+Finally, running **create_comment.py** allows to run the whole script and generate a TXT file (`comment.txt`) with all the above infomation formatted and ready to be copied and pasted on Hive.
 
 ## Main Features
 
@@ -20,8 +22,9 @@ Moreover, the script also keep track of all the previous winners of the contests
 - **Word Count**: Counts the number of words in the post body (excluding images and links).
 - **Comment Reply Check**: Verifies if the post author has replied to comments in the past 7 days.
 - **Poll Voting Check**: Verifies if the author voted in one of the last 3 polls.
-- **Authors' Stats**: Check autors' stats and save them in a TXT file
-- **Winners List**: Keep track of the winners of the contest
+- **Authors' Stats**: Check autors' stats and save them in a TXT file.
+- **Winners List**: Keep track of the winners of the contest.
+- **Generate Formatted Comment**: Gathered data are inserted and formatted inside a TXT file, ready to be copy-pasted.
 
 ## System Requirements
 
