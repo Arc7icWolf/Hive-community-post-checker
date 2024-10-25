@@ -246,7 +246,7 @@ def eligible_posts(session: requests.Session):
             if polls_voted == 0:
                 continue
 
-            author_stats = f"{author} posted {replies_num} comments and voted in {polls_voted} polls"
+            author_stats = f"**{author}** posted **{replies_num} comments** and voted in **{polls_voted} polls**"
             if author_stats not in authors_stats:
                 authors_stats.append(author_stats)
 
@@ -275,6 +275,7 @@ def eligible_posts(session: requests.Session):
             file.write(f"{entry}\n")
 
     with open("authors_list.txt", "w", newline="", encoding="utf-8") as file:
+        authors_stats.sort()
         for author_stats in authors_stats:
             file.write(f"{author_stats}\n")
 
