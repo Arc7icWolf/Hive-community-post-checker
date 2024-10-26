@@ -60,12 +60,18 @@ def get_contest_winners(session: requests.Session):
         print("No new posts from @balaenoptera found")
         return False
     else:
-        print(f"Found {new_posts_num} new posts from @baleanoptera: updating winners list...")
+        print(
+            f"Found {new_posts_num} new posts from @baleanoptera: updating winners list..."
+        )
         winners[0]["timestamp"] = posts[0]["created"]
     for post in posts[:new_posts_num]:
         beneficiaries = post["beneficiaries"]
         for beneficiary in beneficiaries:
-            if beneficiary["weight"] == 3000 or beneficiary["weight"] == 6000:
+            if (
+                beneficiary["weight"] == 3000
+                or beneficiary["weight"] == 6000
+                or beneficiary["weight"] == 6500
+            ):
                 winner_found = False
                 for winner in winners:
                     if winner.get("author", []) == beneficiary["account"]:
