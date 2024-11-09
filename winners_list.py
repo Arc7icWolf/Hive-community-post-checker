@@ -63,7 +63,7 @@ def get_contest_winners(session: requests.Session):
         beneficiaries = post["beneficiaries"]
         for beneficiary in beneficiaries:
             if (
-                beneficiary["weight"] >= 2000
+                beneficiary["weight"] >= 1500
                 and beneficiary["account"] not in not_winners
             ):
                 winner_found = False
