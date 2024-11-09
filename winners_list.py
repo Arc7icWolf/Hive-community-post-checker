@@ -12,9 +12,6 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 
-# INTERACTION WITH HIVE API
-
-
 # Send request, get response, return decoded JSON response
 def get_response(data, session: requests.Session):
     urls = [
