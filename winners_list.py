@@ -32,9 +32,6 @@ def get_response(data, session: requests.Session):
         return response
 
 
-# CHECK REQUIREMENTS OF THE POSTS // API INTERACTION --> YES
-
-
 # Get and update list of users who won at least a contest
 def get_contest_winners(session: requests.Session):
     # Get replies from target author
@@ -64,13 +61,13 @@ def get_contest_winners(session: requests.Session):
             f"Found {new_posts_num} new posts from @baleanoptera: updating winners list..."
         )
         winners[0]["timestamp"] = posts[0]["created"]
+    not_winners = ["weeklytops", "libertycrypto27"]
     for post in posts[:new_posts_num]:
         beneficiaries = post["beneficiaries"]
         for beneficiary in beneficiaries:
             if (
-                beneficiary["weight"] == 3000
-                or beneficiary["weight"] == 6000
-                or beneficiary["weight"] == 6500
+                beneficiary["weight"] >= 2000
+                and beneficiary["account"] not in not_winners
             ):
                 winner_found = False
                 for winner in winners:
