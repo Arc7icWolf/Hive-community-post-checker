@@ -40,7 +40,9 @@ def get_response(data, session: requests.Session):
         response_json = session.send(request, allow_redirects=False)
         if response_json.status_code == 502:
             continue
-        response = response_json.json()["result"]
+        response = response_json.json().get("result", [])
+        if not response:
+            return None
         return response
 
 
@@ -137,7 +139,7 @@ def has_replied(author, seven_days, session: requests.Session):
 
 
 # Check if target account voted in one of the 3 last polls
-def has_voted_poll(last_poll, author, session: requests.Session):
+def has_voted_poll(last_polls, author, session: requests.Session):
     today = datetime.now()
     three_weeks_ago = today - timedelta(days=21, hours=23)
     num = -1
@@ -149,15 +151,18 @@ def has_voted_poll(last_poll, author, session: requests.Session):
             f'"params":["{author}", {num}, 1000, 262144], "id":1}}'
         )
         custom_json = get_response(data, session)
-        for op in custom_json:
-            link = op[1]["op"][1]["id"]
-            if link in last_poll:
-                polls_voted += 1
-        timestamp = custom_json[0][1]["timestamp"]
-        timestamp_formatted = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S")
-        if timestamp_formatted < three_weeks_ago:
-            return polls_voted
-        num = custom_json[0][0]
+        if custom_json is not None:
+            for op in custom_json:
+                link = op[1]["op"][1]["id"]
+                if link in last_polls:
+                    polls_voted += 1
+            timestamp = custom_json[0][1]["timestamp"]
+            timestamp_formatted = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S")
+            if timestamp_formatted < three_weeks_ago:
+                return polls_voted
+            num = custom_json[0][0]
+        else:
+            return 0
 
 
 # Fetches the last 3 polls published by the target account
@@ -190,7 +195,7 @@ def eligible_posts(session: requests.Session):
     entries = []
     authors_stats = []
 
-    last_poll = get_last_polls(session)
+    last_polls = get_last_polls(session)
 
     author = ""
     permlink = ""
@@ -242,7 +247,7 @@ def eligible_posts(session: requests.Session):
             if valid_reply is False:
                 continue
 
-            polls_voted = has_voted_poll(last_poll, author, session)
+            polls_voted = has_voted_poll(last_polls, author, session)
             if polls_voted == 0:
                 continue
 
