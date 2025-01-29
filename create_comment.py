@@ -33,12 +33,20 @@ def create_post():
             + "\n"
         )
 
+    return True
+
 
 def main():
-    get_data()
-    print("Success! Gathered all required data")
-    create_post()
-    print("comment.txt is ready to be used!")
+    data = get_data()
+    if data:
+        print("Success! Gathered all required data")
+    else:
+        print("Unable to gather all required data: something went wrong")
+    post = create_post()
+    if post:
+        print("comment.txt is ready to be used!")
+    else:
+        print("Unable to create comment.txt: something went wrong")
 
 
 if __name__ == "__main__":
