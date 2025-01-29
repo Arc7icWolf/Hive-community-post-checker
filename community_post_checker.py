@@ -33,7 +33,7 @@ def get_response(data, session: requests.Session):
         "https://api.deathwing.me",
         "https://api.hive.blog",
         "https://hive-api.arcange.eu",
-        "api.openhive.network"
+        "https://api.openhive.network"
     ]
     for url in urls:
         request = requests.Request("POST", url=url, data=data).prepare()
@@ -42,7 +42,7 @@ def get_response(data, session: requests.Session):
             continue
         response = response_json.json().get("result", [])
         if not response:
-            return None
+            return []
         return response
 
 
@@ -151,18 +151,15 @@ def has_voted_poll(last_polls, author, session: requests.Session):
             f'"params":["{author}", {num}, 1000, 262144], "id":1}}'
         )
         custom_json = get_response(data, session)
-        if custom_json is not None:
-            for op in custom_json:
-                link = op[1]["op"][1]["id"]
-                if link in last_polls:
-                    polls_voted += 1
-            timestamp = custom_json[0][1]["timestamp"]
-            timestamp_formatted = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S")
-            if timestamp_formatted < three_weeks_ago:
-                return polls_voted
-            num = custom_json[0][0]
-        else:
-            return 0
+        for op in custom_json:
+            link = op[1]["op"][1]["id"]
+            if link in last_polls:
+                polls_voted += 1
+        timestamp = custom_json[0][1]["timestamp"]
+        timestamp_formatted = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S")
+        if timestamp_formatted < three_weeks_ago:
+            return polls_voted
+        num = custom_json[0][0]
 
 
 # Fetches the last 3 polls published by the target account
