@@ -41,8 +41,8 @@ def get_response(data, session: requests.Session):
         if response_json.status_code == 502:
             continue
         response = response_json.json().get("result", [])
-        if not response:
-            return []
+        if len(response) == 0:
+            logger.warning(f"{response_json.json()} from this {data}")
         return response
 
 
