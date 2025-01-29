@@ -12,13 +12,16 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 
+# INTERACTION WITH HIVE API
+
+
 # Send request, get response, return decoded JSON response
 def get_response(data, session: requests.Session):
     urls = [
         "https://api.deathwing.me",
         "https://api.hive.blog",
         "https://hive-api.arcange.eu",
-        "api.openhive.network",
+        "https://api.openhive.network",
     ]
     for url in urls:
         request = requests.Request("POST", url=url, data=data).prepare()
