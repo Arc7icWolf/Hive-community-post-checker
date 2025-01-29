@@ -1,7 +1,8 @@
 import unittest
 from community_post_checker import text_language, convert_and_count_words, clean_markdown
 
-class Test_funcs(unittest.TestCase):
+
+class TestFuncs(unittest.TestCase):
 
     def test_text_language(self):
         # Test language detection
@@ -29,6 +30,7 @@ class Test_funcs(unittest.TestCase):
         md_text_ita = "L'apostrofo ed i numeri 123; 1, 2 e 3 con un tag @name."
         result_ita = convert_and_count_words(md_text_ita)
         self.assertEqual(result_ita, 14)
+
 
 if __name__ == "__main__":
     unittest.main()
