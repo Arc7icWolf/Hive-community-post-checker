@@ -301,6 +301,8 @@ def main():
     elapsed_time = time.time() - start
     print(f"Work completed in {elapsed_time:.2f} seconds")
 
+    return True
+
 
 if __name__ == "__main__":
     main()
