@@ -58,7 +58,7 @@ def get_contest_winners(session: requests.Session):
             f"Found {new_posts_num} new posts from @baleanoptera: updating winners list..."
         )
         winners[0]["timestamp"] = posts[0]["created"]
-    not_winners = ["weeklytops", "libertycrypto27"]
+    not_winners = ["weeklytops", "libertycrypto27", "balaenoptera"]
     for post in posts[:new_posts_num]:
         beneficiaries = post["beneficiaries"]
         for beneficiary in beneficiaries:
