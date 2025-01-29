@@ -249,7 +249,7 @@ def eligible_posts(session: requests.Session):
                 continue
 
             author_stats = (
-                f"- **{author}** posted **{replies_num} comments**"
+                f"- **{author}** made **{replies_num} comments**"
                 f" and voted in **{polls_voted} polls**"
             )
             if author_stats not in authors_stats:
