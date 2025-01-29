@@ -38,7 +38,7 @@ def main():
     get_data()
     print("Success! Gathered all required data")
     create_post()
-    print("comment.txt is ready to use!")
+    print("comment.txt is ready to be used!")
 
 
 if __name__ == "__main__":
