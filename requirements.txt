@@ -2,3 +2,4 @@ requests
 markdown
 beautifulsoup4
 langdetect
+streamlit
