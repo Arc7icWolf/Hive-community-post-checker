@@ -259,14 +259,15 @@ def eligible_posts(session: requests.Session):
             if author_stats not in authors_stats:
                 authors_stats.append(author_stats)
 
-            beneficiary = "no"
-            beneficiary_weight_formatted = ""
             for beneficiary in beneficiaries:
                 if beneficiary.get("account", []) == "balaenoptera":
                     beneficiary_weight = beneficiary.get("weight", [])
                     beneficiary_weight_formatted = f" al {int(beneficiary_weight / 100)}%"
                     beneficiary = "sì"
                     break
+                else:
+                    beneficiary = "no"
+                    beneficiary_weight_formatted = ""
 
             message = (
                 f"{i}) {author} ha pubblicato ['{title}'](https://www.peakd.com/@{author}/{permlink})"
