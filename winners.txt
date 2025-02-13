@@ -1,5 +1,5 @@
-{"timestamp": "2025-01-27T23:10:57"}
-{"author": "arc7icwolf", "wins": 11}
+{"timestamp": "2025-02-10T23:42:00"}
+{"author": "arc7icwolf", "wins": 12}
 {"author": "stefano.massari", "wins": 3}
 {"author": "bencwarmer", "wins": 4}
 {"author": "vittoriozuccala", "wins": 2}
@@ -8,7 +8,7 @@
 {"author": "stradaxlaliberta", "wins": 4}
 {"author": "pousinha", "wins": 5}
 {"author": "mad-runner", "wins": 4}
-{"author": "harbiter", "wins": 2}
+{"author": "harbiter", "wins": 3}
 {"author": "tosolini", "wins": 3}
 {"author": "stewie.wieno", "wins": 4}
 {"author": "giuatt07", "wins": 1}

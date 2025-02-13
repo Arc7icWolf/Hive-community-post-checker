@@ -49,13 +49,24 @@ def get_response(data, session: requests.Session):
 # CHECK REQUIREMENTS OF THE POSTS // API INTERACTION --> NO
 
 
+# Clean text from images and hyperlinks
+def clean_text(text):
+    # Remove images
+    text = re.sub(r"!\[.*?]\(.*?\)", "", text)
+
+    # Remove hyperlinks
+    text = re.sub(r"\[(.*?)]\(.*?\)", r"\1", text)
+
+    return text
+
+
 # Check it target language is among the top languages and number of languages
 def text_language(text):
     try:
         languages = detect_langs(text)
         num_languages = len(languages)
 
-        # Double-check the presence of the target language to avoid false negatives
+        # To avoid false negatives, split the text in two and check them one by one
         if not any(lang.lang == "it" for lang in languages):
             text_length = len(text)
             half_length = text_length // 2
@@ -64,12 +75,13 @@ def text_language(text):
             for _ in range(2):
                 languages = detect_langs(first_half)
                 if any(lang.lang == "it" for lang in languages):
-                    num_languages = 2  # Set to 2 because there's another language
+                    num_languages = 2  # Set to 2 because there's at least another language
                     break
                 languages = detect_langs(second_half)
                 if any(lang.lang == "it" for lang in languages):
                     num_languages = 2  # Same as above
                     break
+
     except Lang_e:
         logger.error(f"Language error: {Lang_e}")
         return False, 0
@@ -84,26 +96,14 @@ def text_language(text):
     return contains_target_lang, num_languages
 
 
-# Clean text before converting and counting words
-def clean_markdown(md_text):
-    # Remove images
-    md_text = re.sub(r"!\[.*?]\(.*?\)", "", md_text)
-
-    # Remove hyperlinks
-    md_text = re.sub(r"\[(.*?)]\(.*?\)", r"\1", md_text)
-
-    return md_text
-
-
-# Convert to plain text and check post's length
-def convert_and_count_words(md_text):
-    cleaned_md_text = clean_markdown(md_text)
-    html = markdown.markdown(cleaned_md_text, output_format="html")
+# Check post's length
+def convert_and_count_words(text):
+    html = markdown.markdown(text, output_format="html")
 
     soup = BeautifulSoup(html, "html.parser")
-    text = soup.get_text()
+    converted_text = soup.get_text()
 
-    words = re.findall(r"\b\w+\b", text)
+    words = re.findall(r"\b\w+\b", converted_text)
     return len(words)
 
 
@@ -151,14 +151,17 @@ def has_voted_poll(last_polls, author, session: requests.Session):
             f'"params":["{author}", {num}, 1000, 262144], "id":1}}'
         )
         custom_json = get_response(data, session)
+
         for op in custom_json:
             link = op[1]["op"][1]["id"]
             if link in last_polls:
                 polls_voted += 1
+
         timestamp = custom_json[0][1]["timestamp"]
         timestamp_formatted = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S")
         if timestamp_formatted < three_weeks_ago:
             return polls_voted
+        
         num = custom_json[0][0]
 
 
@@ -228,13 +231,14 @@ def eligible_posts(session: requests.Session):
                 print("No more posts less than seven days older found")
                 break  # Stop if post is more than 7 days old
 
-            valid_language, lang_num = text_language(body)
+            cleaned_body = clean_text(body)
+
+            valid_language, lang_num = text_language(cleaned_body)
 
             if valid_language is False:
                 continue
 
-            word_count = convert_and_count_words(body)
-
+            word_count = convert_and_count_words(cleaned_body)
             if (lang_num == 1 and word_count < 500) or (
                     lang_num > 1 and word_count < 1000
             ):
@@ -249,8 +253,8 @@ def eligible_posts(session: requests.Session):
                 continue
 
             author_stats = (
-                f"- **{author}** made **{replies_num} comments**"
-                f" and voted in **{polls_voted} polls**"
+                f"- **{author}** ha effettuato **{replies_num} commenti**"
+                f" e votato in **{polls_voted} sondaggi**"
             )
             if author_stats not in authors_stats:
                 authors_stats.append(author_stats)
@@ -260,13 +264,13 @@ def eligible_posts(session: requests.Session):
             for beneficiary in beneficiaries:
                 if beneficiary.get("account", []) == "balaenoptera":
                     beneficiary_weight = beneficiary.get("weight", [])
-                    beneficiary_weight_formatted = f"for {int(beneficiary_weight / 100)}%"
-                    beneficiary = "yes"
+                    beneficiary_weight_formatted = f" al {int(beneficiary_weight / 100)}%"
+                    beneficiary = "sì"
                     break
 
             message = (
-                f"{i}) {author} published ['{title}'](https://www.peakd.com/@{author}/{permlink})"
-                f" ---> balaenoptera as beneficiary? {beneficiary} {beneficiary_weight_formatted}"
+                f"{i}) {author} ha pubblicato ['{title}'](https://www.peakd.com/@{author}/{permlink})"
+                f" ---> balaenoptera come beneficiario? {beneficiary}{beneficiary_weight_formatted}"
             )
 
             entries.append(message)
@@ -280,7 +284,7 @@ def eligible_posts(session: requests.Session):
             file.write(f"{entry}\n")
 
     with open("authors_list.txt", "w", newline="", encoding="utf-8") as file:
-        authors_stats.sort()
+        authors_stats.sort(key=lambda x: int(x.replace("*", "").split()[4]), reverse=True)
         for author_stats in authors_stats:
             file.write(f"{author_stats}\n")
 

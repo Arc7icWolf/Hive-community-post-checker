@@ -18,7 +18,7 @@ def create_post():
                 winners.append(winner)
     winners.pop(0)
     winners_formatted = [
-        f"- **{winner["author"]}** won {winner["wins"]} times" for winner in winners
+        f"- **{winner["author"]}** ha vinto {winner["wins"]} volte" for winner in winners
     ]
     winners_formatted.sort(key=lambda x: int(x.split()[-2]), reverse=True)
 
